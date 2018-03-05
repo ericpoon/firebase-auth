@@ -4,15 +4,14 @@ import { FormLabel, FormInput, Button } from 'react-native-elements';
 import axios from 'axios';
 import { ROOT_URL } from '../config/cloud';
 
-class SignUpForm extends Component {
-  state = { email: '' };
+class SignInForm extends Component {
+  state = { email: '', code: '' };
 
-  onSubmitPress = async () => { // use async/await (just syntactic sugar, doesn't change how JS runs/works)
-    const { email } = this.state;
-
+  onSubmitPress = async () => {
+    const { email, code } = this.state;
     try {
-      await axios.post(`${ROOT_URL}/createUser`, { email });
-      await axios.post(`${ROOT_URL}/requestOneTimePassword`, { email });
+      let response = await axios.post(`${ROOT_URL}/verifyOneTimePassword`, { email, code });
+      console.log(response);
     } catch (err) {
       console.log(err.message);
       console.log(err.response.data);
@@ -29,10 +28,17 @@ class SignUpForm extends Component {
             onChangeText={email => this.setState({ email })}
           />
         </View>
+        <View style={{ marginBottom: 15 }}>
+          <FormLabel>Enter Code</FormLabel>
+          <FormInput
+            value={this.state.code}
+            onChangeText={code => this.setState({ code })}
+          />
+        </View>
         <Button title={'Submit'} onPress={this.onSubmitPress} />
       </View>
     );
   }
 }
 
-export default SignUpForm;
+export default SignInForm;
