@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
 import axios from 'axios';
+import firebase from 'firebase';
 import { ROOT_URL } from '../config/cloud';
 
 class SignInForm extends Component {
@@ -10,13 +11,28 @@ class SignInForm extends Component {
   onSubmitPress = async () => {
     const { email, code } = this.state;
     try {
-      let response = await axios.post(`${ROOT_URL}/verifyOneTimePassword`, { email, code });
-      console.log(response);
+      let { data } = await axios.post(`${ROOT_URL}/verifyOneTimePassword`, { email, code });
+      console.log(data.token);
+
+      firebase.auth().signInWithCustomToken(data.token);
+
     } catch (err) {
       console.log(err.message);
       console.log(err.response.data);
     }
   };
+
+  componentDidMount() {
+    const config = {
+      apiKey: 'AIzaSyAHG5esRkxlYSKWq17fvBLEcI0-Q-KCeQY',
+      authDomain: 'one-time-password-efa31.firebaseapp.com',
+      databaseURL: 'https://one-time-password-efa31.firebaseio.com',
+      projectId: 'one-time-password-efa31',
+      storageBucket: 'one-time-password-efa31.appspot.com',
+      messagingSenderId: '40240200873',
+    };
+    firebase.initializeApp(config);
+  }
 
   render() {
     return (
