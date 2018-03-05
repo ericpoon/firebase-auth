@@ -6,7 +6,7 @@ import firebase from 'firebase';
 import { ROOT_URL } from '../config/cloud';
 
 class SignInForm extends Component {
-  state = { email: '', code: '' };
+  state = { email: '', code: '', loggedIn: false };
 
   onSubmitPress = async () => {
     const { email, code } = this.state;
@@ -14,7 +14,8 @@ class SignInForm extends Component {
       let { data } = await axios.post(`${ROOT_URL}/verifyOneTimePassword`, { email, code });
       console.log(data.token);
 
-      firebase.auth().signInWithCustomToken(data.token);
+      await firebase.auth().signInWithCustomToken(data.token);
+      this.setState({ loggedIn: true });
 
     } catch (err) {
       console.log(err.message);
@@ -22,19 +23,12 @@ class SignInForm extends Component {
     }
   };
 
-  componentDidMount() {
-    const config = {
-      apiKey: 'AIzaSyAHG5esRkxlYSKWq17fvBLEcI0-Q-KCeQY',
-      authDomain: 'one-time-password-efa31.firebaseapp.com',
-      databaseURL: 'https://one-time-password-efa31.firebaseio.com',
-      projectId: 'one-time-password-efa31',
-      storageBucket: 'one-time-password-efa31.appspot.com',
-      messagingSenderId: '40240200873',
-    };
-    firebase.initializeApp(config);
-  }
-
   render() {
+    if (this.state.loggedIn) {
+      return (
+        <Text>Logged in successfully!</Text>
+      );
+    }
     return (
       <View>
         <View style={{ marginBottom: 15 }}>
